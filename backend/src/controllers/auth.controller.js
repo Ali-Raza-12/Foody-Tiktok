@@ -10,9 +10,9 @@ const foodPartner = require("../models/food-partner.model");
 // User auth controller
 async function registerUser(req, res, next) {
   try {
-    const { fullName, email, password } = req.body;
+    const { fullName, email, address, phone, password } = req.body;
 
-    if (!fullName || !email || !password) {
+    if (!fullName || !email || !address || !phone || !password) {
       throw new ApiError(400, "All fields are required");
     }
 
@@ -27,6 +27,8 @@ async function registerUser(req, res, next) {
     const user = await User.create({
       fullName,
       email,
+      phone,
+      address,
       password: hashedPassword,
     });
 
