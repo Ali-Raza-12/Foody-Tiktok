@@ -1,4 +1,4 @@
-const ApiError = require('../utills/ApiError')
+const ApiError = require('../utils/ApiError')
 const jwt = require("jsonwebtoken")
 const foodPartnerModel = require('../models/food-partner.model');
 const User = require('../models/user.model');

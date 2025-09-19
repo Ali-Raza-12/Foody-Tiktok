@@ -1,8 +1,8 @@
 const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
-const generateToken = require("../utills/generateToken");
-const sendResponseToken = require("../utills/sendTokenResponse");
-const ApiError = require("../utills/ApiError");
+const generateToken = require("../utils/generateToken");
+const sendResponseToken = require("../utils/sendTokenResponse");
+const ApiError = require("../utils/ApiError");
 const foodPartner = require("../models/food-partner.model");
 
 
@@ -10,9 +10,9 @@ const foodPartner = require("../models/food-partner.model");
 // User auth controller
 async function registerUser(req, res, next) {
   try {
-    const { fullName, email, address, phone, password } = req.body;
+    const { fullName, email, password } = req.body;
 
-    if (!fullName || !email || !address || !phone || !password) {
+    if (!fullName || !email || !password) {
       throw new ApiError(400, "All fields are required");
     }
 
@@ -27,8 +27,6 @@ async function registerUser(req, res, next) {
     const user = await User.create({
       fullName,
       email,
-      phone,
-      address,
       password: hashedPassword,
     });
 
@@ -99,9 +97,9 @@ async function logoutUser(req, res, next) {
 // Food Partner controller
 async function registerFoodPartner(req, res, next) {
   try {
-    const { name, email, password } = req.body;
+    const { restaurantName, ownerName, email, phoneNumber, address, password } = req.body;
 
-    if (!name || !email || !password) {
+    if (!restaurantName || !ownerName || !email || !phoneNumber || !address || !password) {
       throw new ApiError(400, "All fields are required");
     }
 
@@ -114,7 +112,10 @@ async function registerFoodPartner(req, res, next) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const foodPartnerUser = await foodPartner.create({
-      name,
+      restaurantName,
+      ownerName,
+      phoneNumber,
+      address,
       email,
       password: hashedPassword,
     });

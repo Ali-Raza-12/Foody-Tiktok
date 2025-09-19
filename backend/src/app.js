@@ -1,9 +1,10 @@
 const express = require("express")
 require("dotenv").config();
 const cookiesParser = require("cookie-parser")
-const userRoutes = require('./routes/auth.routes');
-const errorHandler = require("./utills/ErrorHandler");
+const authRoutes = require('./routes/auth.routes');
+const errorHandler = require("./utils/ErrorHandler");
 const foodRoutes = require("./routes/foodItems.routes")
+const userRoutes = require("./routes/user.routes")
 const cors = require("cors")
 
 const app = express();
@@ -19,8 +20,9 @@ app.get("/", (req, res) => {
     res.send("Hello world")
 })
 
-app.use("/api/auth", userRoutes)
+app.use("/api/auth", authRoutes)
 app.use("/api/foodItem", foodRoutes)
+app.use("/api/user", userRoutes);
 
 
 app.use(errorHandler)

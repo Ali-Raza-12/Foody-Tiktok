@@ -1,6 +1,6 @@
 const FoodItem = require("../models/food.model");
-const ApiError = require("../utills/ApiError");
-const uploadToCloudinary = require("../utills/cloudinaryUpload");
+const ApiError = require("../utils/ApiError");
+const uploadToCloudinary = require("../utils/cloudinaryUpload");
 
 async function createFoodItem(req, res, next) {
   try {

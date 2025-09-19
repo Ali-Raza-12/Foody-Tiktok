@@ -3,22 +3,42 @@ const mongoose = require("mongoose")
 const UserSchema = new mongoose.Schema({
     fullName: {
         type: String,
-        require: true
+        required: true
+    },
+    avatar: {
+      type: String,
+      default: function() {
+        const name = this.fullName || "User"; 
+        return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff`;
+      },
+    },
+    bio: {
+        type: String
+    },
+    followers: {
+        type: Number,
+        default: 0
+    },
+    following: {
+        type: Number,
+        default: 0
+    },
+    likes: {
+        type: Number,
+        default: 0
+    },   
+    verified: {
+        type: Boolean,
+        default: true
     },
     email: {
         type: String,
-        require: true,
+        required: true,
         unique: true
-    },
-    phone: {
-        type: String,
-    },
-    address: {
-        type: String,
     },
     password: {
         type: String,
-        require: true
+        required: true
     }
 }, { timestamps: true });
 
