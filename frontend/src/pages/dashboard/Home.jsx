@@ -1,58 +1,81 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Heart, MessageCircle, Share, User, MoreHorizontal, Play, Pause } from 'lucide-react';
+import { getVideos } from '../../services/videoService';
 
 const Home = () => {
+
+  const [videosData, setVideosData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [currentVideo, setCurrentVideo] = useState(0);
   const [playingStates, setPlayingStates] = useState({});
   const videoRefs = useRef([]);
 
-  // Sample video data
-  const videos = [
-    {
-      id: 1,
-      videoUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
-      title: "Delicious Pasta Carbonara Recipe",
-      description: "Learn how to make authentic Italian carbonara with creamy sauce and crispy pancetta. Perfect for dinner!",
-      author: "Chef Marco",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
-      likes: 1234,
-      comments: 89,
-      shares: 45
-    },
-    {
-      id: 2,
-      videoUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4",
-      title: "Japanese Ramen Bowl",
-      description: "Step by step guide to making rich and flavorful tonkotsu ramen at home with perfect soft-boiled eggs",
-      author: "Sushi Master",
-      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150",
-      likes: 2156,
-      comments: 234,
-      shares: 78
-    },
-    {
-      id: 3,
-      videoUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_5mb.mp4",
-      title: "Perfect Chocolate Cake",
-      description: "Moist and decadent chocolate cake recipe that will impress everyone. Secret ingredient revealed!",
-      author: "Baker Sarah",
-      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150",
-      likes: 3456,
-      comments: 167,
-      shares: 123
-    },
-    {
-      id: 4,
-      videoUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
-      title: "Healthy Buddha Bowl",
-      description: "Nutritious and colorful buddha bowl packed with quinoa, roasted vegetables and tahini dressing",
-      author: "Wellness Chef",
-      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150",
-      likes: 987,
-      comments: 56,
-      shares: 34
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+       const response = await getVideos();
+       console.log("123", response.data.Items);
+       setVideosData(response.data.Items);
+       setLoading(false);
+
+      } catch (error) {
+        console.error("Error fetching videos:", error);
+        setLoading(false);
+      } finally {
+        setLoading(false);
+      }
     }
-  ];
+
+    fetchVideos();
+  }, []);
+
+  // Sample video data
+  // const videos = [
+  //   {
+  //     id: 1,
+  //     videoUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
+  //     title: "Delicious Pasta Carbonara Recipe",
+  //     description: "Learn how to make authentic Italian carbonara with creamy sauce and crispy pancetta. Perfect for dinner!",
+  //     author: "Chef Marco",
+  //     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
+  //     likes: 1234,
+  //     comments: 89,
+  //     shares: 45
+  //   },
+  //   {
+  //     id: 2,
+  //     videoUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4",
+  //     title: "Japanese Ramen Bowl",
+  //     description: "Step by step guide to making rich and flavorful tonkotsu ramen at home with perfect soft-boiled eggs",
+  //     author: "Sushi Master",
+  //     avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150",
+  //     likes: 2156,
+  //     comments: 234,
+  //     shares: 78
+  //   },
+  //   {
+  //     id: 3,
+  //     videoUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_5mb.mp4",
+  //     title: "Perfect Chocolate Cake",
+  //     description: "Moist and decadent chocolate cake recipe that will impress everyone. Secret ingredient revealed!",
+  //     author: "Baker Sarah",
+  //     avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150",
+  //     likes: 3456,
+  //     comments: 167,
+  //     shares: 123
+  //   },
+  //   {
+  //     id: 4,
+  //     videoUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
+  //     title: "Healthy Buddha Bowl",
+  //     description: "Nutritious and colorful buddha bowl packed with quinoa, roasted vegetables and tahini dressing",
+  //     author: "Wellness Chef",
+  //     avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150",
+  //     likes: 987,
+  //     comments: 56,
+  //     shares: 34
+  //   }
+  // ];
 
   const togglePlay = (index) => {
     const video = videoRefs.current[index];
@@ -86,6 +109,14 @@ const Home = () => {
     return num.toString();
   };
 
+  if (loading) {
+     return (
+      <div className="h-screen flex items-center justify-center bg-black text-white">
+        Loading videos...
+      </div>
+    );
+  }
+
   return (
     <div className="h-screen bg-black overflow-hidden relative">
       {/* Video Container */}
@@ -94,7 +125,7 @@ const Home = () => {
         onScroll={handleScroll}
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
-        {videos.map((video, index) => (
+        {videosData.map((video, index) => (
           <div key={video.id} className="h-screen w-full relative snap-start flex-shrink-0">
             {/* Video Player */}
             <div className="absolute inset-0 bg-black">
@@ -192,7 +223,7 @@ const Home = () => {
             {/* Video Progress Indicator */}
             <div className="absolute top-1/2 left-2 transform -translate-y-1/2">
               <div className="flex flex-col space-y-2">
-                {videos.map((_, i) => (
+                {videosData.map((_, i) => (
                   <div
                     key={i}
                     className={`w-1 h-8 rounded-full transition-all ${

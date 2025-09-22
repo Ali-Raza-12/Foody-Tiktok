@@ -4,20 +4,20 @@ const uploadToCloudinary = require("../utils/cloudinaryUpload");
 
 async function createFoodItem(req, res, next) {
   try {
-    const { name, description } = req.body;
+    const { title, description } = req.body;
     const file = req.file;
 
-    if (!name || !description || !file) {
+    if (!title || !description || !file) {
       throw new ApiError(400, "All fields are required");
     }
 
     const uploadResult = await uploadToCloudinary(req.file.buffer);
 
     const foodItem = await FoodItem.create({
-      name,
+      title,
       description,
       videoUrl: uploadResult.secure_url,
-      foodPartner: req.foodPartner._id,
+      author: req.user._id,
     });
 
     res.status(201).json({

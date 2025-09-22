@@ -185,7 +185,7 @@ const Profile = () => {
               <Edit className="w-4 h-4 inline mr-2" />
               Edit Profile
             </button>
-            <button className="bg-gradient-to-r from-blue-500 to-purple-500 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-600 hover:to-purple-600 transition-all flex items-center">
+            <button onClick={() => navigate("/createFood")} className="bg-gradient-to-r from-blue-500 to-purple-500 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-600 hover:to-purple-600 transition-all flex items-center">
               <Plus className="w-5 h-5 mr-2" />
               Post Video
             </button>
