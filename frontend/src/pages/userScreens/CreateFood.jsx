@@ -1,15 +1,65 @@
 import React, { useState, useRef } from "react";
 import { X, Upload, Video, Hash, AlignLeft, Info } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { createFoodItem } from "../../services/videoService";
 
 const CreateFood = () => {
   const navigate = useNavigate();
 
   const titleRef = useRef(null);
   const descriptionRef = useRef(null);
-  const videoRef = useRef(null);
 
-  const [vidoePreview, setVideoPreview] = useState(null)
+  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [videoPreview, setVideoPreview] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleVideoUpload = (event) => {
+    const file = event.target.files[0];
+
+    if (!file) {
+      toast.error("Please upload a video");
+      return;
+    }
+
+    setSelectedVideo(file);
+    const videoURL = URL.createObjectURL(file);
+    setVideoPreview(videoURL);
+  };
+
+  const removeVideo = () => {
+    setSelectedVideo(null);
+    setVideoPreview(null);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const title = titleRef.current?.value;
+    const description = descriptionRef.current?.value;
+
+    if (!title || !description || selectedVideo == null) {
+      toast.error("Please fill all the fields and upload a video.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("video", selectedVideo);
+
+    try {
+      setLoading(true);
+
+      await createFoodItem(formData);
+      toast.success("Food item created successfully");
+      navigate("/user/profile");
+    } catch (error) {
+      toast.error(error.res?.data?.message || "Failed to create food item.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -17,7 +67,9 @@ const CreateFood = () => {
       <div className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between px-4 py-3">
-            <h1 className="text-xl font-bold text-gray-900">Create New Food Post</h1>
+            <h1 className="text-xl font-bold text-gray-900">
+              Create New Food Post
+            </h1>
             <button
               onClick={() => navigate("/user/profile")}
               className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -34,7 +86,9 @@ const CreateFood = () => {
           <div className="border-b border-gray-200 px-6 py-4">
             <div className="flex items-center space-x-8">
               <div className="flex items-center">
-                <span className="ml-2 text-sm font-medium text-blue-600">Details</span>
+                <span className="ml-2 text-sm font-medium text-blue-600">
+                  Details
+                </span>
               </div>
             </div>
           </div>
@@ -45,13 +99,14 @@ const CreateFood = () => {
               <div className="space-y-6">
                 <div>
                   <div className="flex items-center mb-2">
-                    <label className="text-sm font-medium text-gray-700">Title</label>
+                    <label className="text-sm font-medium text-gray-700">
+                      Title
+                    </label>
                   </div>
                   <input
                     type="text"
                     name="name"
-                    value={formData.title}
-                    onChange={handleInputChange}
+                    ref={titleRef}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                     placeholder="Title"
                   />
@@ -59,12 +114,13 @@ const CreateFood = () => {
 
                 <div>
                   <div className="flex items-center mb-2">
-                    <label className="text-sm font-medium text-gray-700">Description</label>
+                    <label className="text-sm font-medium text-gray-700">
+                      Description
+                    </label>
                   </div>
                   <textarea
                     name="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
+                    ref={descriptionRef}
                     rows={4}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none"
                     placeholder="Describe what makes your dish special..."
@@ -72,17 +128,21 @@ const CreateFood = () => {
                 </div>
               </div>
 
-              {/* Right Column - Video Upload */}
+              {/* Video Upload */}
               <div>
                 <div className="flex items-center mb-2">
                   <Video className="w-5 h-5 text-blue-500 mr-2" />
-                  <label className="text-sm font-medium text-gray-700">Video</label>
+                  <label className="text-sm font-medium text-gray-700">
+                    Video
+                  </label>
                 </div>
 
                 {!videoPreview ? (
-                  <div 
+                  <div
                     className="relative border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-500 transition-colors cursor-pointer bg-gray-50"
-                    onClick={() => document.getElementById('video-upload').click()}
+                    onClick={() =>
+                      document.getElementById("video-upload").click()
+                    }
                   >
                     <input
                       type="file"
@@ -132,10 +192,10 @@ const CreateFood = () => {
             <div className="flex justify-between items-center">
               <button
                 onClick={handleSubmit}
-                disabled={!selectedVideo || !formData.title}
+                disabled={loading}
                 className="px-8 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Create Post
+                {loading ? "Creating" : "Create Post"}
               </button>
             </div>
           </div>

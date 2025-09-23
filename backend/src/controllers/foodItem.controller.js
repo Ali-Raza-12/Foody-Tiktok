@@ -30,13 +30,32 @@ async function createFoodItem(req, res, next) {
   }
 }
 
-async function getFoodItems(req, res, next) {
+async function getUserFoodItems(req, res, next) {
   try {
-    const foodItems = await FoodItem.find({});
+    const userId = req.user._id;
+
+    const foodItems = await FoodItem.find({ author: userId });
+    console.log(foodItems)
+
+    return res.status(200).json({
+      message: "User food items fetched successfully",
+      items: foodItems,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function getHomeFeed(req, res, next) {
+  try {
+
+    const userId = req.user._id
+
+    const foodItems = await FoodItem.find({ author: {$ne: userId }});
 
     return res
       .status(200)
-      .json({ message: "Food items fetch successfully", Items: foodItems });
+      .json({ message: "Food items fetch successfully", items: foodItems });
   } catch (error) {
     next(error);
   }
@@ -44,5 +63,6 @@ async function getFoodItems(req, res, next) {
 
 module.exports = {
   createFoodItem,
-  getFoodItems
+  getUserFoodItems,
+  getHomeFeed
 };

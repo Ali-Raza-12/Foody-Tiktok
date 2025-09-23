@@ -1,31 +1,31 @@
 import React, { useEffect, useState } from "react";
 import {
   ArrowLeft,
-  Settings,
-  Share,
   Plus,
   Play,
   Heart,
-  MessageCircle,
-  MoreHorizontal,
   Edit,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { getUserProfile } from "../../services/profileService";
+import { getUserVideos } from "../../services/videoService";
 import { toast } from "react-toastify";
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("videos");
   const [profileData, setProfileData] = useState({});
+  const [userVideos, setUserVideos] = useState([]);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await getUserProfile();
-        setProfileData(response.data);
-        console.log(response.data);
+        const ProfileRes = await getUserProfile();
+        setProfileData(ProfileRes.data);
+
+        const videosRes = await getUserVideos();
+        setUserVideos(videosRes.data.items || []);
       } catch (error) {
         toast.error(
           error.response?.data?.message || "Failed to load profile data"
@@ -35,58 +35,6 @@ const Profile = () => {
 
     fetchUserData();
   }, []);
-
-  // Sample videos
-  const userVideos = [
-    {
-      id: 1,
-      thumbnail:
-        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=300&h=400&fit=crop",
-      views: "1.2M",
-      duration: "0:45",
-      title: "Perfect Pasta Carbonara",
-    },
-    {
-      id: 2,
-      thumbnail:
-        "https://images.unsplash.com/photo-1572441713132-51c75654db73?w=300&h=400&fit=crop",
-      views: "890K",
-      duration: "1:20",
-      title: "Homemade Pizza Margherita",
-    },
-    {
-      id: 3,
-      thumbnail:
-        "https://images.unsplash.com/photo-1563379091339-03246963d51a?w=300&h=400&fit=crop",
-      views: "2.1M",
-      duration: "0:38",
-      title: "Creamy Risotto Recipe",
-    },
-    {
-      id: 4,
-      thumbnail:
-        "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=300&h=400&fit=crop",
-      views: "657K",
-      duration: "1:05",
-      title: "Fresh Bruschetta",
-    },
-    {
-      id: 5,
-      thumbnail:
-        "https://images.unsplash.com/photo-1579952363873-27d3bfad9c0d?w=300&h=400&fit=crop",
-      views: "1.8M",
-      duration: "0:52",
-      title: "Tiramisu Dessert",
-    },
-    {
-      id: 6,
-      thumbnail:
-        "https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=300&h=400&fit=crop",
-      views: "934K",
-      duration: "1:15",
-      title: "Seafood Linguine",
-    },
-  ];
 
   const formatNumber = (num) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + "M";
@@ -181,11 +129,14 @@ const Profile = () => {
 
           {/* Action Buttons */}
           <div className="flex space-x-3">
-            <button className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 text-white py-3 px-6 rounded-lg font-semibold hover:from-orange-600 hover:to-red-600 transition-all">
+            <button onClick={() => navigate("/user/editProfile")} className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 text-white py-3 px-6 rounded-lg font-semibold hover:from-orange-600 hover:to-red-600 transition-all">
               <Edit className="w-4 h-4 inline mr-2" />
               Edit Profile
             </button>
-            <button onClick={() => navigate("/createFood")} className="bg-gradient-to-r from-blue-500 to-purple-500 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-600 hover:to-purple-600 transition-all flex items-center">
+            <button
+              onClick={() => navigate("/createFood")}
+              className="bg-gradient-to-r from-blue-500 to-purple-500 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-600 hover:to-purple-600 transition-all flex items-center"
+            >
               <Plus className="w-5 h-5 mr-2" />
               Post Video
             </button>
@@ -221,19 +172,21 @@ const Profile = () => {
       <div className="px-4 py-4">
         {activeTab === "videos" && (
           <div className="grid grid-cols-3 gap-1">
-            {userVideos.map((video) => (
+            {userVideos.map((userVideo) => (
               <div
-                key={video.id}
+                key={userVideo.id}
                 className="relative aspect-[9/16] bg-gray-200 rounded-lg overflow-hidden group cursor-pointer"
               >
-                <img
-                  src={video.thumbnail}
-                  alt={video.title}
+                <video
+                  src={userVideo.videoUrl}
+                  alt={userVideo.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                  muted
+                  loop
                 />
 
                 {/* Overlay */}
-                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200" />
+                <div className="absolute group-hover:bg-opacity-30 transition-all duration-200" />
 
                 {/* Play Icon */}
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
@@ -242,18 +195,16 @@ const Profile = () => {
                       className="w-6 h-6 text-gray-800"
                       fill="currentColor"
                     />
+                    <h1>abc</h1>
                   </div>
                 </div>
 
                 {/* Video Info */}
-                <div className="absolute bottom-2 left-2 right-2">
+                <div className="absolute bottom-2 left-2 right-2 ">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center text-white text-xs">
-                      <Play className="w-3 h-3 mr-1" fill="white" />
-                      {video.views}
-                    </div>
-                    <div className="bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">
-                      {video.duration}
+                      {/* <Play className="w-3 h-3 mr-1" fill="white" /> */}
+                      <div className="">{userVideo.likes} Likes</div>
                     </div>
                   </div>
                 </div>

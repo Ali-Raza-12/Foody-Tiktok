@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Heart, MessageCircle, Share, User, MoreHorizontal, Play, Pause } from 'lucide-react';
-import { getVideos } from '../../services/videoService';
+import { getHomeFeed } from '../../services/videoService';
 
 const Home = () => {
 
@@ -13,7 +13,7 @@ const Home = () => {
   useEffect(() => {
     const fetchVideos = async () => {
       try {
-       const response = await getVideos();
+       const response = await getHomeFeed();
        console.log("123", response.data.Items);
        setVideosData(response.data.Items);
        setLoading(false);
