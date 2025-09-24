@@ -35,7 +35,6 @@ async function getUserFoodItems(req, res, next) {
     const userId = req.user._id;
 
     const foodItems = await FoodItem.find({ author: userId });
-    console.log(foodItems)
 
     return res.status(200).json({
       message: "User food items fetched successfully",

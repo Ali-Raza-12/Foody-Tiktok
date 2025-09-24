@@ -5,7 +5,7 @@ export const getUserVideos = async () => {
 }
 
 export const getHomeFeed = async () => {
-    return await api.get("foodItems")
+    return await api.get("/foodItem")
 }
 
 export const createFoodItem = async (foodItemData) => {
