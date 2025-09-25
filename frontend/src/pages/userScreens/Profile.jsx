@@ -56,7 +56,7 @@ const Profile = () => {
             <ArrowLeft className="w-6 h-6 text-gray-800" />
           </button>
           <div className="flex-1 text-center">
-            <h1 className="text-lg font-semibold text-gray-900">
+            <h1 className="text-xl heading-elegant text-gray-900">
               {profileData.fullName}
             </h1>
           </div>

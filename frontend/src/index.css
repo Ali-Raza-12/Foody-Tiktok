@@ -1,1 +1,56 @@
 @import "tailwindcss";
+
+@layer base {
+  html {
+    font-family: 'Poppins', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+  }
+}
+
+@layer utilities {
+  .font-playfair {
+    font-family: 'Playfair Display', serif;
+  }
+  
+  .font-poppins {
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  .font-dancing {
+    font-family: 'Dancing Script', cursive;
+  }
+
+  .font-playfair-italic {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+  }
+}
+
+/* Custom Styles */
+.brand-text {
+  font-family: 'Dancing Script', cursive;
+  font-weight: 700;
+}
+
+.heading-elegant {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+}
+
+.heading-bold {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+}
+
+.body-text {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+}
+
+.accent-text {
+  font-family: 'Dancing Script', cursive;
+  font-weight: 400;
+}

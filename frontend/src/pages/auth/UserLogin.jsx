@@ -46,10 +46,10 @@ const UserLogin = () => {
           <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
             <User className="w-8 h-8 text-white" />
           </div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">
+          <h2 className="text-3xl heading-elegant text-gray-900 mb-2">
             Welcome Back
           </h2>
-          <p className="text-gray-600">Sign in to your FoodHub account</p>
+          <p className="text-gray-600 font-poppins">Sign in to your <span className="brand-text text-xl">FoodHub</span> account</p>
         </div>
 
         {/* Form */}

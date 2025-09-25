@@ -50,7 +50,8 @@ async function getHomeFeed(req, res, next) {
 
     const userId = req.user._id
 
-    const foodItems = await FoodItem.find({ author: {$ne: userId }});
+    const foodItems = await FoodItem.find({ author: {$ne: userId }})
+      .populate('author', "fullName avatar");
 
     return res
       .status(200)

@@ -86,7 +86,7 @@ const EditProfile = () => {
             >
               <ArrowLeft className="w-6 h-6 text-gray-800" />
             </button>
-            <h1 className="text-xl font-bold text-gray-900">Edit Profile</h1>
+            <h1 className="text-2xl heading-elegant text-gray-900">Edit Profile</h1>
             <div className="w-10" /> {/* Spacer for alignment */}
           </div>
         </div>

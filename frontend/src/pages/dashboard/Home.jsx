@@ -54,20 +54,7 @@ const Home = () => {
     });
   }, [currentVideo]);
 
-  const togglePlay = (index) => {
-    const video = videoRefs.current[index];
-    if (video) {
-      if (playingStates[index]) {
-        video.pause();
-      } else {
-        video.play();
-      }
-      setPlayingStates((prev) => ({
-        ...prev,
-        [index]: !prev[index],
-      }));
-    }
-  };
+
 
   const handleScroll = (e) => {
     const container = e.target;
@@ -130,7 +117,7 @@ const Home = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
             {/* Right Side Actions */}
-            <div className="absolute right-4 bottom-28 flex flex-col items-center space-y-6">
+            <div className="absolute right-4 bottom-4 flex flex-col items-center space-y-6">
               {/* Action Button (Reusable) */}
               {[
                 { icon: Heart, count: video.likes },
@@ -175,6 +162,19 @@ const Home = () => {
               >
                 <MoreHorizontal className="w-6 h-6 text-white" />
               </button>
+
+              <div className="">
+                <img
+                  src={video.author.avatar}
+                  alt={video.author.fullName}
+                  className="w-12 h-12 rounded-full border-2 border-white mr-3"
+                />
+                <div className="flex-1">
+                  <h3 className="text-white font-semibold text-lg">
+                    {video.author.fullName}
+                  </h3>
+                </div>
+              </div>
             </div>
 
             {/* Bottom Content */}
@@ -182,13 +182,13 @@ const Home = () => {
               {/* Author Info */}
               <div className="flex items-center mb-3">
                 <img
-                  src={video.avatar}
-                  alt={video.author}
+                  src={video.author.avatar}
+                  alt={video.author.fullName}
                   className="w-12 h-12 rounded-full border-2 border-white mr-3"
                 />
                 <div className="flex-1">
                   <h3 className="text-white font-semibold text-lg">
-                    {video.author}
+                    {video.author.fullName}
                   </h3>
                 </div>
                 <button className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-2 rounded-full text-sm font-medium hover:from-orange-600 hover:to-red-600 transition-all">
@@ -205,26 +205,6 @@ const Home = () => {
               <p className="text-white text-sm leading-5 opacity-90 line-clamp-2 overflow-hidden">
                 {video.description}
               </p>
-
-              {/* Visit Profile Button */}
-              <button className="mt-4 bg-white bg-opacity-20 backdrop-blur-sm text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-opacity-30 transition-all flex items-center">
-                <User className="w-4 h-4 mr-2" />
-                Visit Profile
-              </button>
-            </div>
-
-            {/* Video Progress Indicator */}
-            <div className="absolute top-1/2 left-2 transform -translate-y-1/2">
-              <div className="flex flex-col space-y-2">
-                {videosData.map((_, i) => (
-                  <div
-                    key={i}
-                    className={`w-1 h-8 rounded-full transition-all ${
-                      i === index ? "bg-white" : "bg-white bg-opacity-30"
-                    }`}
-                  />
-                ))}
-              </div>
             </div>
           </div>
         ))}
@@ -234,9 +214,6 @@ const Home = () => {
       <div className="absolute top-0 left-0 right-0 z-10 p-4 bg-gradient-to-b from-black/50 to-transparent">
         <div className="flex justify-between items-center">
           <h1 className="text-white text-2xl font-bold">Foody Tiktok</h1>
-          <button className="text-white p-2">
-            <User className="w-6 h-6" />
-          </button>
         </div>
       </div>
 

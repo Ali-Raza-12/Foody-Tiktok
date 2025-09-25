@@ -19,7 +19,7 @@ const foodSchema = new mongoose.Schema({
     },
 
     likes: {
-        type: Number,
+        type: Number,   
         default: 0
     },
     comments: {

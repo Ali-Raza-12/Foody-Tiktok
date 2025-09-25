@@ -7,11 +7,3 @@ export const registerUser = (userData) => {
 export const loginUser = (userData) => {
     return api.post('/auth/login', userData)
 }
-
-export const registerPartner = (partnerData) => {
-    return api.post('auth/food-partner/register', partnerData)
-}
-
-export const loginPartner = (partnerData) => {
-    return api.post('auth/food-partner/login', partnerData)
-}
