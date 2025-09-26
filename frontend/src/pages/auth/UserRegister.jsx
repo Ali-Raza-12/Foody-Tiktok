@@ -3,8 +3,11 @@ import { Mail, Lock, User, Phone, MapPin } from "lucide-react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../../services/authService";
+import { useAuth } from "../../context/AuthContext";
 
 const UserRegister = () => {
+  
+  const { setUser } = useAuth();
   const [loading, setLoading] = useState(false);
 
   const nameRef = useRef(null);
@@ -35,7 +38,8 @@ const UserRegister = () => {
     };
 
     try {
-        await registerUser(userData);
+        const response = await registerUser(userData);
+        setUser(response.data.user)
         toast.success("Register Successfully");
         navigate("/");
     } catch (error) {

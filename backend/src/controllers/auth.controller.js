@@ -40,6 +40,7 @@ async function registerUser(req, res, next) {
         id: user._id,
         fullName: user.fullName,
         email: user.email,
+        avatar: user.avatar
       },
     });
   } catch (error) {
@@ -76,6 +77,7 @@ async function loginUser(req, res, next) {
         userId: user._id,
         fullName: user.fullName,
         email: user.email,
+        avatar: user.avatar
       },
     });
   } catch (error) {

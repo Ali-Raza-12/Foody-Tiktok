@@ -1,12 +1,15 @@
 import AppRoutes from "./routes/AppRoutes";
 import { ToastContainer } from "react-toastify";
+import { AuthProvider } from "./context/AuthContext.jsx";
 
 function App() {
   return (
     <>
       <div className="w-[100%] min-height-screen flex justify-center items-center">
-        <div className="max-w-[800px] w-full">
-          <AppRoutes />
+        <div className=" w-full">
+          <AuthProvider>
+            <AppRoutes />
+          </AuthProvider>
         </div>
       </div>
       <ToastContainer

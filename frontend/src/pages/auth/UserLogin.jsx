@@ -3,8 +3,11 @@ import { Mail, Lock, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { loginUser } from "../../services/authService";
+import { useAuth } from "../../context/AuthContext";
 
 const UserLogin = () => {
+
+  const { setUser } = useAuth();
   const [loading, setLoading] = useState(false);
 
   const emailRef = useRef(null);
@@ -29,7 +32,8 @@ const UserLogin = () => {
     };
 
     try {
-      await loginUser(userData);
+      const response = await loginUser(userData);
+      setUser(response.data.user)
       toast.success("Login Successfully");
       navigate("/");
     } catch (error) {

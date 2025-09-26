@@ -5,18 +5,22 @@ import {
   Share,
   User,
   MoreHorizontal,
-  Play,
-  Pause,
+  Bookmark,
+  BookOpen,
+  Camera,
 } from "lucide-react";
 import { getHomeFeed } from "../../services/videoService";
 import { toast } from "react-toastify";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const [videosData, setVideosData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentVideo, setCurrentVideo] = useState(0);
-  const [playingStates, setPlayingStates] = useState({});
   const videoRefs = useRef([]);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchVideos = async () => {
@@ -25,7 +29,6 @@ const Home = () => {
         const response = await getHomeFeed();
         if (response.data && Array.isArray(response.data.items)) {
           setVideosData(response.data.items);
-          console.log(response.data.items);
         } else {
           throw new Error("Invalid response format");
         }
@@ -41,20 +44,16 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    if (videoRefs.current[currentVideo]) {
-      videoRefs.current[currentVideo].play();
-      setPlayingStates((prev) => ({ ...prev, [currentVideo]: true }));
-    }
-
+    // Auto-play the current video and pause others
     videoRefs.current.forEach((video, index) => {
-      if (video && index != currentVideo) {
+      if (!video) return;
+      if (index === currentVideo) {
+        video.play().catch(() => {});
+      } else {
         video.pause();
-        setPlayingStates((prev) => ({ ...prev, [index]: false }));
       }
     });
   }, [currentVideo]);
-
-
 
   const handleScroll = (e) => {
     const container = e.target;
@@ -78,14 +77,22 @@ const Home = () => {
 
   if (loading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-black text-white">
-        Loading videos...
+      <div className="h-screen flex items-center justify-center app-bg">
+        <div className="text-center">
+          <div className="w-16 h-16 mx-auto rounded-full bg-[rgba(255,183,77,0.14)] flex items-center justify-center mb-4">
+            <Camera className="w-6 h-6 text-[rgb(var(--brand))]" />
+          </div>
+          <div className="text-lg font-semibold">Loading the feed</div>
+          <div className="text-sm text-muted mt-2">
+            Hang tight — fresh recipes incoming
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="h-screen bg-white overflow-hidden relative">
+    <div className="h-screen app-bg overflow-hidden relative safe-area">
       {/* Video Container */}
       <div
         className="h-full overflow-y-auto snap-y snap-mandatory scrollbar-hide"
@@ -95,7 +102,7 @@ const Home = () => {
         {videosData.map((video, index) => (
           <div
             key={video.id}
-            className="h-screen w-full relative snap-start flex-shrink-0"
+            className="h-screen w-full relative snap-start flex-shrink-0 video-screen"
           >
             {/* Video Player */}
             <div className="absolute inset-0 bg-black">
@@ -103,7 +110,7 @@ const Home = () => {
                 ref={(el) => {
                   videoRefs.current[index] = el;
                 }}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
                 loop
                 autoPlay
                 muted
@@ -116,118 +123,101 @@ const Home = () => {
             {/* Gradient Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
-            {/* Right Side Actions */}
-            <div className="absolute right-4 bottom-4 flex flex-col items-center space-y-6">
-              {/* Action Button (Reusable) */}
-              {[
-                { icon: Heart, count: video.likes },
-                { icon: MessageCircle, count: video.comments },
-                { icon: Share, count: video.shares },
-              ].map(({ icon: Icon, count }, i) => (
-                <div key={i} className="flex flex-col items-center">
-                  <button
-                    className="
-                        bg-white/10 
-                        hover:bg-white/20 
-                        backdrop-blur-md 
-                        rounded-full 
-                        p-3
-                        transition 
-                        shadow-md 
-                        hover:scale-110 
-                        active:scale-95   
-                      "
-                  >
-                    <Icon className="w-6 h-6 text-white" />
-                  </button>
-                  <span className="text-white text-sm mt-1 font-semibold">
-                    {formatNumber(count)}
-                  </span>
-                </div>
-              ))}
+            {/* Right Side Actions (Production-like) */}
+            <div className="action-sidebar">
+              <div className="action-btn" role="button" aria-label="like">
+                <Heart className="w-6 h-6 text-[rgb(var(--brand))]" />
+                <div className="action-count">{formatNumber(video.likes)}</div>
+              </div>
 
-              {/* More Options */}
-              <button
-                className="
-                bg-white/10 
-                hover:bg-white/20 
-                backdrop-blur-md 
-                rounded-full 
-                p-3
-                transition 
-                shadow-md 
-                hover:scale-110 
-                active:scale-95
-                "
-              >
-                <MoreHorizontal className="w-6 h-6 text-white" />
-              </button>
+              <div className="action-btn" role="button" aria-label="comment">
+                <MessageCircle className="w-6 h-6 text-white" />
+                <div className="action-count">
+                  {formatNumber(video.comments)}
+                </div>
+              </div>
+
+              <div className="action-btn" role="button" aria-label="share">
+                <Share className="w-6 h-6 text-white" />
+                <div className="action-count">{formatNumber(video.shares)}</div>
+              </div>
+
+              <div className="action-btn" role="button" aria-label="save">
+                <Bookmark className="w-6 h-6 text-white" />
+              </div>
+
+              <div className="action-btn" role="button" aria-label="recipe">
+                <BookOpen className="w-6 h-6 text-white" />
+              </div>
 
               <div className="">
-                <img
-                  src={video.author.avatar}
-                  alt={video.author.fullName}
-                  className="w-12 h-12 rounded-full border-2 border-white mr-3"
-                />
-                <div className="flex-1">
-                  <h3 className="text-white font-semibold text-lg">
-                    {video.author.fullName}
-                  </h3>
-                </div>
+                <button onClick={() => navigate("/user/profile")}>
+                  <img
+                    src={user.avatar}
+                    alt={user.fullName}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                </button>
               </div>
             </div>
 
-            {/* Bottom Content */}
-            <div className="absolute bottom-0 left-0 right-20 p-6">
-              {/* Author Info */}
-              <div className="flex items-center mb-3">
+            {/* Bottom-left metadata and overlays */}
+            <div className="video-meta">
+              <div className="flex items-center mb-2">
                 <img
                   src={video.author.avatar}
                   alt={video.author.fullName}
-                  className="w-12 h-12 rounded-full border-2 border-white mr-3"
+                  className="w-10 h-10 rounded-full border-2 border-white mr-3 object-cover"
                 />
-                <div className="flex-1">
-                  <h3 className="text-white font-semibold text-lg">
-                    {video.author.fullName}
-                  </h3>
+                <div>
+                  <div className="username text-white">
+                    @{video.author.fullName}
+                  </div>
+                  <div className="text-sm text-[rgba(255,255,255,0.85)]">
+                    {video.author.followers} followers
+                  </div>
                 </div>
-                <button className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-2 rounded-full text-sm font-medium hover:from-orange-600 hover:to-red-600 transition-all">
-                  Follow
-                </button>
+                <div className="ml-4">
+                  {user &&
+                  (video.author?._id === user._id ||
+                    video.author?.id === user.id) ? (
+                    <button
+                      disabled
+                      className="px-4 py-2 bg-white/10 text-white rounded-full text-sm font-semibold cursor-not-allowed"
+                    >
+                      You
+                    </button>
+                  ) : (
+                    <button className="px-4 py-2 bg-[rgb(var(--brand))] text-white rounded-full text-sm font-semibold">
+                      Follow
+                    </button>
+                  )}
+                </div>
               </div>
 
-              {/* Video Title */}
-              <h2 className="text-white text-xl font-bold mb-2">
-                {video.title}
-              </h2>
-
-              {/* Description - Truncated to 2 lines */}
-              <p className="text-white text-sm leading-5 opacity-90 line-clamp-2 overflow-hidden">
-                {video.description}
-              </p>
+              <div className="mt-2">
+                <div className="caption text-white font-poppins">
+                  {video.title}
+                </div>
+                <div className="caption text-[rgba(255,255,255,0.9)] mt-2">
+                  {video.description}
+                </div>
+                <div className="hashtags">
+                  #{(video.tags || []).slice(0, 3).join("  #")}
+                </div>
+              </div>
             </div>
           </div>
         ))}
       </div>
 
       {/* Top Navigation */}
-      <div className="absolute top-0 left-0 right-0 z-10 p-4 bg-gradient-to-b from-black/50 to-transparent">
-        <div className="flex justify-between items-center">
-          <h1 className="text-white text-2xl font-bold">Foody Tiktok</h1>
+      <div className="top-bar">
+        <div className="w-[100%] flex items-center gap-4">
+          <div className="w-[45%] brand-text text-white text-2xl">FoodHub</div>
+          <div className="tab active">For You</div>
         </div>
       </div>
-
-      <style jsx>{`
-        .line-clamp-2 {
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
     </div>
   );
 };

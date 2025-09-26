@@ -7,34 +7,21 @@ import {
   Edit,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { getUserProfile } from "../../services/profileService";
-import { getUserVideos } from "../../services/videoService";
-import { toast } from "react-toastify";
+import { useAuth } from "../../context/AuthContext";
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("videos");
   const [profileData, setProfileData] = useState({});
   const [userVideos, setUserVideos] = useState([]);
 
-  const navigate = useNavigate();
+  const {user, loading} = useAuth();
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const ProfileRes = await getUserProfile();
-        setProfileData(ProfileRes.data);
+    setProfileData(user)
+    setUserVideos(user.data.items || [])
+  }, [user])
 
-        const videosRes = await getUserVideos();
-        setUserVideos(videosRes.data.items || []);
-      } catch (error) {
-        toast.error(
-          error.response?.data?.message || "Failed to load profile data"
-        );
-      }
-    };
-
-    fetchUserData();
-  }, []);
+  const navigate = useNavigate();
 
   const formatNumber = (num) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + "M";
@@ -42,7 +29,8 @@ const Profile = () => {
     return num;
   };
 
-  if (!profileData) return <p>Loading...</p>;
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div className="min-h-screen bg-gray-50">
